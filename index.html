@@ -1,39 +1,91 @@
-name: Deploy Toymorphism Board Game to GitHub Pages
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Tactile Toy Board Game | نموذج ثلاثي الأبعاد</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- خطوط عربية ولاتينية بنمط الكاجوال اللطيف -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700;800&family=Tajawal:wght@700;900&display=swap" rel="stylesheet">
+  <!-- مكتبة Three.js ثلاثية الأبعاد ومكتبة القصاصات الملونة -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+  <div id="game-container">
+    <!-- مشهد الـ 3D -->
+    <canvas id="webgl-canvas"></canvas>
 
-on:
-  push:
-    branches:
-      - main
-      - master
-  workflow_dispatch:
+    <!-- شريط الواجهة العلوي -->
+    <header class="top-bar">
+      <div class="profile-card">
+        <div class="avatar-ring">
+          <span class="avatar-emoji">👑</span>
+          <div class="level-badge" id="level-display">1</div>
+        </div>
+        <div class="profile-info">
+          <div class="player-name">عمدة المدينة</div>
+          <div class="exp-bar-container">
+            <div class="exp-bar-fill" id="exp-bar" style="width: 35%;"></div>
+          </div>
+        </div>
+      </div>
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+      <div class="currency-group">
+        <div class="currency-pill coin-pill">
+          <div class="coin-icon">🪙</div>
+          <span class="currency-amount" id="coin-display">1,250</span>
+          <button class="add-btn">+</button>
+        </div>
 
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
+        <button id="sound-btn" class="icon-circle-btn" aria-label="تبديل الصوت">
+          <span id="sound-icon">🔊</span>
+        </button>
+      </div>
+    </header>
 
-jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+    <!-- إشعار عائم للأرباح السريعة -->
+    <div id="floating-msg" class="floating-msg hidden"></div>
 
-      - name: Setup GitHub Pages
-        uses: actions/configure-pages@v4
+    <!-- نافذة الأحداث والمكافآت التفاعلية -->
+    <div id="event-modal" class="modal-overlay hidden">
+      <div class="modal-card">
+        <div class="modal-icon-bounce" id="modal-icon">🎁</div>
+        <h2 id="modal-title">صندوق الكنز!</h2>
+        <p id="modal-desc">حصلت على جائزة كبرى من عمدة المدينة!</p>
+        <div class="reward-box" id="modal-reward">+300 🪙</div>
+        <button id="modal-claim-btn" class="juicy-btn claim-btn">
+          <span>جمع الجائزة</span>
+          <div class="btn-shine"></div>
+        </button>
+      </div>
+    </div>
 
-      - name: Upload Static Artifacts
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: '.'
+    <!-- لوحة التحكم السفلية وزر الرمي الضخم -->
+    <footer class="bottom-bar">
+      <div class="dice-counter-card">
+        <span class="dice-icon">🎲</span>
+        <span class="dice-count" id="dice-count-display">30 / 30</span>
+      </div>
 
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      <div class="roll-btn-wrapper">
+        <button id="roll-btn" class="juicy-btn roll-btn">
+          <div class="btn-content">
+            <span class="roll-text">ارمِ النرد!</span>
+            <span class="roll-sub">اضغط للتدحرج</span>
+          </div>
+          <div class="btn-shine"></div>
+        </button>
+      </div>
+
+      <button id="multiplier-btn" class="multiplier-btn">
+        <span>x1</span>
+      </button>
+    </footer>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
